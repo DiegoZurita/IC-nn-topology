@@ -24,12 +24,15 @@ class NeuralNetwork():
     def add_layer(self, neurons):
         self._biases.append( np.random.randn(neurons) )
 
-        nrows = self.input_size
+        prev_layer_size = self.input_size
         if self._n_layers > 0:
             # Quantidade de neurônios na camada annterior
-            nrows = self._weights[-1].shape[1]
+            #
+            # Número de linhas da camada anterior, é a dimensão
+            # da saida.
+            prev_layer_size = self._weights[-1].shape[0]
 
-        self._weights.append( np.random.randn(nrows, neurons) )
+        self._weights.append( np.random.randn(neurons, prev_layer_size) )
         self._n_layers += 1
 
     # O compile da rede é adicionar a camada de output.
@@ -65,7 +68,7 @@ class NeuralNetwork():
         for weight, bias in zip(self._weights, self._biases):
             # np.dot calcula o produto de matrizes. 
             # Documentação em: https://numpy.org/doc/stable/reference/generated/numpy.dot.html
-            z = np.dot(a, weight) + bias
+            z = np.dot(weight, a.transpose()) + bias
             zs.append(z)
             a = self.activation(z)
             activations.append(a)
@@ -92,7 +95,7 @@ class NeuralNetwork():
             sp = self.activation_prime(z)
 
             # Propaga o erro para a camada anterior.
-            delta = np.dot(self._weights[-l+1], delta) * sp
+            delta = np.dot(self._weights[-l+1].transpose(), delta) * sp
 
             # Atualiza o erro cometido nessa camada.
             news_b[-l] = delta
@@ -151,11 +154,11 @@ class NeuralNetwork():
     # Dada pela seguinte equação: http://neuralnetworksanddeeplearning.com/chap2.html#eqtnBP4.
     # A implementação é a definição. Deve ter jeitos mais rápidos de fazer.
     def cost_matrix_over_weitght(self, activation, delta):
-        columns = []
+        rows = []
         for delta_i in delta:
-            columns.append(activation*delta_i)
+            rows.append(activation*delta_i)
 
-        return np.column_stack(columns)
+        return np.array(rows)
         
     # Calcula o custo atual da rede.
     # Como função de custo estou usado a distância quadratica.
@@ -193,7 +196,7 @@ if __name__ == "__main__":
 
     X, y = make_classification(n_features=4, n_samples=1000)
 
-    _ = n.train(X, y, epochs=100, eta=2)
+    _ = n.train(X, y, epochs=100, eta=4, batch_size=100)
 
     y_predic = n.predict(X)
     y_predic = np.array([ round(y_hat[0]) for y_hat in y_predic])
