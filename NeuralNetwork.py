@@ -13,6 +13,9 @@ class NeuralNetwork():
     _n_layers = 0
 
     def __init__(self, input_size, output_size):
+        self._biases = []
+        self._weights = []
+        self._n_layers = 0
         self.input_size = input_size
         self.output_size = output_size
 
