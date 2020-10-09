@@ -15,15 +15,23 @@ float fx(float x) {
     return std::pow(x, 2);
 }
 
-int main() 
+int main(int argc, char* argv[]) 
 {
 
-    int samples = 50;
+    int samples = atoi(argv[1]);
+    double lr = atof(argv[2]);
+    int epochs = atof(argv[3]);
+    int pixels = atoi(argv[4]);
     float a = -1;
     float b = 1;
     float h = (b-a)/(samples-1);
     int i;
-
+    int j = 0;
+    float h_i;    
+    
+    ColVector* x;
+    ColVector* pred;
+    Index max_i;
     std::vector<ColVector*> X;
     std::vector<ColVector*> y;
     ColVector* red;
@@ -31,6 +39,10 @@ int main()
     ColVector* y_red;
     ColVector* y_blue;
 
+    std::cout << "Samples: " << samples;
+    std::cout << ", Learning Rate: " << lr;
+    std::cout << ", Epochs: " << epochs;
+    std::cout << ", Pixels output: " << pixels << std::endl << std::endl;
 
     // Creating samples
     for (i = 0; i < samples; i++) {
@@ -44,7 +56,7 @@ int main()
         blue = new ColVector(2);
         y_blue = new ColVector(2);
         (*blue)[0] = a + i*h;
-        (*blue)[1] = fx((*blue)[0]) + 0.8;
+        (*blue)[1] = fx((*blue)[0]) + 0.7;
         (*y_blue)[0] = 0;
         (*y_blue)[1] = 1;
 
@@ -60,22 +72,30 @@ int main()
 
     // training
     NN n({2, 2});
-    n.train(X, y, 0.03872, 20);
+    n.train(X, y, lr, epochs);
+
+    std::cout << std::endl;
+
+    // Exibir matriz das layers;
+    for (i = 0; i < n.weights.size(); i++) {
+        std::cout << " Layer: " << i+1 << std::endl;
+        std::cout << *n.weights[i] << std::endl;
+        std::cout << " Bias: " << i+1 << std::endl;
+        std::cout << *n.bias[i] << std::endl << std::endl;
+    }
+
+    std::cout << std::endl << " Imagem: " << std::endl;
 
 
-
-    int pixels = 100;
+    x = new ColVector(2);
+    h_i = 2.5/ (pixels - 1);
     h = (b - a) / (pixels - 1);
-    float h_i = 2.0/ (pixels - 1);
-    int j = 0;
-    ColVector* x = new ColVector(2);
-    ColVector* pred;
-    Index max_i;
+
     for (i = 0; i < pixels; i++) {
-        std::cout << 1.5 - i*h_i << " ";
+        // std::cout << 2 - i*h_i << " ";
         for (j = 0; j < pixels; j++) {
             (*x)[0] = a + j*h;
-            (*x)[1] = 1.5 - i*h_i;
+            (*x)[1] = 2 - i*h_i;
 
             pred = n.predict(x);
             pred->maxCoeff(&max_i);
@@ -83,5 +103,14 @@ int main()
             std::cout << max_i << " ";
         }
         std::cout << std::endl;
+    }
+
+
+    // Limpar memoria
+    delete x;
+
+    for (i = 0; i < X.size(); i++) {
+        delete X[i];
+        delete y[i];
     }
 }

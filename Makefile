@@ -9,4 +9,4 @@ NN.o:./NN.cpp ./NN.hpp
 	$(CXX) $(CXXFLAGS) $(WARNINGS) -c ./NN.cpp
 
 clean:
-	rm main NN.o
+	rm main *.o
