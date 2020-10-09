@@ -9,7 +9,6 @@ typedef Eigen::MatrixXf Matrix;
 typedef Eigen::RowVectorXf RowVector;
 typedef Eigen::VectorXf ColVector;
 typedef Matrix::Index Index;
-typedef unsigned int uint;
 
 float activation(float x);
 float activation_derivate(float x);
@@ -22,15 +21,14 @@ public:
     void calc_deltas(ColVector ouput);
     void update_weitghs(float lr, ColVector x);
     void backpropagate(ColVector* x, ColVector* y, float lr);
-    float cost(ColVector* x, ColVector* y);
+    float cost(std::vector<ColVector*> x, std::vector<ColVector*> y);
     float accuracy(std::vector<ColVector*> X, std::vector<ColVector*> y);
-    void train(std::vector<ColVector*> x, std::vector<ColVector*> y, float lr);
+    void train(std::vector<ColVector*> x, std::vector<ColVector*> y, float lr, uint epochs);
     ColVector* predict(ColVector* x);
 
     uint input_size;
     uint output_size;
-    uint n_layers; 
-    std::vector<float> costs_over_time;
+    uint n_layers;
     std::vector<Matrix*> weights;
     std::vector<ColVector*> bias;
     std::vector<ColVector*> z;

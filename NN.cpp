@@ -49,16 +49,19 @@ void NN::feedfoward(ColVector input) {
     }
 }
 
-float NN::cost(ColVector* x, ColVector* y) {
-    float* c = new float;
+float NN::cost(std::vector<ColVector*> x, std::vector<ColVector*> y) {
+    float c = 0;
+    int n = x.size();
+    int i;
     ColVector dif;
 
-    feedfoward(*x);
-    dif = *(a.back()) - *y;
-    *c += std::pow( dif.norm(), 2);
+    for (i = 0; i < n; i++) {
+        feedfoward(*x[i]);
+        dif = *(a.back()) - *y[i];
+        c += std::pow( dif.norm(), 2);
+    }
 
-    costs_over_time.push_back( (*c)/2 );
-    return (*c)/2;
+    return c/(2*n);
 }
 
 void NN::calc_deltas(ColVector output) {
@@ -82,18 +85,24 @@ void NN::update_weitghs(float lr, ColVector x) {
     }
 }
 
+// Make possible to create a batch training
 void NN::backpropagate(ColVector* x, ColVector* y, float lr) {
     calc_deltas(*y);
     update_weitghs(lr, *x);
 }
 
-void NN::train(std::vector<ColVector*> x, std::vector<ColVector*> y, float lr) {
-    int i;
+void NN::train(std::vector<ColVector*> x, std::vector<ColVector*> y, float lr, uint epochs) {
+    int i, epoch;
     int n = x.size();
 
-    for (i = 0; i < n; i++) {
-        feedfoward(*(x[i]));
-        backpropagate(x[i], y[i], lr);
+    for (epoch = 0; epoch < epochs; epoch++) {
+        for (i = 0; i < n; i++) {
+            feedfoward(*(x[i]));
+            backpropagate(x[i], y[i], lr);
+        }
+        std::cout << "Epoch: " << epoch;;
+        std::cout << " acc: " << accuracy(x, y);
+        std::cout << " cost: " << cost(x, y) << std::endl;
     }
 }
 
@@ -114,7 +123,7 @@ float NN::accuracy(std::vector<ColVector*> X, std::vector<ColVector*> y) {
     for (i = 0; i < X.size(); i++) {
         x = X[i];
         y_real = y[i];
-        y_pred = predict(y_real);
+        y_pred = predict(x);
 
         y_real->maxCoeff(&max_real);
         y_pred->maxCoeff(&max_pred);
