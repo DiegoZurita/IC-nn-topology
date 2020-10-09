@@ -5,7 +5,7 @@
 
 NN::NN(std::vector<uint> topology) {
     int i;
-
+    srand(time(NULL));
     input_size = topology[0];
     output_size = topology.back();
     n_layers = topology.size();
@@ -92,13 +92,20 @@ void NN::backpropagate(ColVector* x, ColVector* y, float lr) {
 }
 
 void NN::train(std::vector<ColVector*> x, std::vector<ColVector*> y, float lr, uint epochs) {
-    int i, epoch;
+    int i, epoch, j;
     int n = x.size();
+    std::vector<uint> indexes(n);
+
+    for (i = 0; i < n; i++) {
+        indexes[i] = i;
+    }
 
     for (epoch = 0; epoch < epochs; epoch++) {
+        permutate(indexes);
         for (i = 0; i < n; i++) {
-            feedfoward(*(x[i]));
-            backpropagate(x[i], y[i], lr);
+            j = indexes[i];
+            feedfoward(*(x[j]));
+            backpropagate(x[j], y[j], lr);
         }
         std::cout << "Epoch: " << epoch;;
         std::cout << " acc: " << accuracy(x, y);
@@ -133,4 +140,14 @@ float NN::accuracy(std::vector<ColVector*> X, std::vector<ColVector*> y) {
     }
     
     return acc/X.size();
+}
+
+void NN::permutate(std::vector<uint>& v) {
+    int i;
+    int n = v.size();
+    for (i = 0; i < n; i++) {
+        int index = rand() % n; 
+
+        std::swap(v[i], v[index]);
+    }
 }

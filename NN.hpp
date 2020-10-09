@@ -34,6 +34,9 @@ public:
     std::vector<ColVector*> z;
     std::vector<ColVector*> a; // z after apply the activation function
     std::vector<ColVector*> deltas;
+
+private:
+    void permutate(std::vector<uint>& v);
 };
 
 #endif // NN_H

@@ -31,8 +31,6 @@ int main()
     ColVector* y_red;
     ColVector* y_blue;
 
-    NN n({2, 2});
-
 
     // Creating samples
     for (i = 0; i < samples; i++) {
@@ -46,36 +44,38 @@ int main()
         blue = new ColVector(2);
         y_blue = new ColVector(2);
         (*blue)[0] = a + i*h;
-        (*blue)[1] = fx((*blue)[0]) + 0.5;
+        (*blue)[1] = fx((*blue)[0]) + 0.8;
         (*y_blue)[0] = 0;
         (*y_blue)[1] = 1;
 
-        X.push_back(red);
-        X.push_back(blue);
 
-        y.push_back(y_red);
+        X.push_back(blue);
         y.push_back(y_blue);
+
+        X.push_back(red);
+        y.push_back(y_red);
     }
 
 
 
     // training
-    n.train(X, y, 0.4);
-    
-    std::cout << "Acuracia: " << n.accuracy(X, y) << std::endl;
+    NN n({2, 2});
+    n.train(X, y, 0.03872, 20);
 
 
-    // Generating output
+
     int pixels = 100;
     h = (b - a) / (pixels - 1);
-    float h_i = 4.0/ (pixels - 1);
+    float h_i = 2.0/ (pixels - 1);
+    int j = 0;
     ColVector* x = new ColVector(2);
     ColVector* pred;
     Index max_i;
     for (i = 0; i < pixels; i++) {
-        for (int j = 0; j < pixels; j++) {
+        std::cout << 1.5 - i*h_i << " ";
+        for (j = 0; j < pixels; j++) {
             (*x)[0] = a + j*h;
-            (*x)[1] = -2 + i*h_i;
+            (*x)[1] = 1.5 - i*h_i;
 
             pred = n.predict(x);
             pred->maxCoeff(&max_i);
