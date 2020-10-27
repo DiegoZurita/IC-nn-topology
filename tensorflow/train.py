@@ -32,9 +32,8 @@ def main():
     model = tf.keras.models.Sequential([
         tf.keras.layers.Input(shape=(2,)),
         #tf.keras.layers.Dense(4, activation="relu"),
-        tf.keras.layers.Dense(4, activation="relu"),
-        #tf.keras.layers.Dense(2, activation="relu"),
-        tf.keras.layers.Dense(2, activation="relu")
+        tf.keras.layers.Dense(3, activation="relu"),
+        tf.keras.layers.Dense(2, activation="tanh")
     ])
 
     #optim = tf.keras.optimizers.SGD(lr=0.471)
@@ -46,7 +45,7 @@ def main():
     )
 
     # model.summary()
-    _ = model.fit(x, y, epochs=50)
+    _ = model.fit(x, y, epochs=30)
 
 
 if __name__ == "__main__":
