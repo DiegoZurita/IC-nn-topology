@@ -46,7 +46,6 @@ def main():
         )
     ])
 
-    #optim = tf.keras.optimizers.SGD(lr=0.471)
     optim = tf.keras.optimizers.Adam(learning_rate=0.031)
     model.compile(
         optimizer=optim,
@@ -55,14 +54,14 @@ def main():
     )
 
     # model.summary()
-    _ = model.fit(x, y, epochs=30)
+    _ = model.fit(x, y, epochs=15)
 
     print("")
     for layer in model.layers:
-        print("-----------Internal layer {}-----------".format(layer.name))
-        print("Weghts")
+        print("----------- Internal layer {} -----------".format(layer.name))
+        print("Weghts:")
         print(layer.weights[0].numpy())
-        print("bias")
+        print("Bias:")
         print(layer.bias.numpy())
         print(" ")
 
