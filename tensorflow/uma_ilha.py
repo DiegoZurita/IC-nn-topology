@@ -32,8 +32,18 @@ def main():
     model = tf.keras.models.Sequential([
         tf.keras.layers.Input(shape=(2,)),
         #tf.keras.layers.Dense(4, activation="relu"),
-        tf.keras.layers.Dense(3, activation="relu"),
-        tf.keras.layers.Dense(2, activation="tanh")
+        tf.keras.layers.Dense(
+            units=3, 
+            activation="relu",
+            bias_initializer="random_uniform",
+            name="internal"
+        ),
+        tf.keras.layers.Dense(
+            units=2, 
+            activation="tanh", 
+            bias_initializer="random_uniform",
+            name="output"
+        )
     ])
 
     #optim = tf.keras.optimizers.SGD(lr=0.471)
@@ -46,6 +56,15 @@ def main():
 
     # model.summary()
     _ = model.fit(x, y, epochs=30)
+
+    print("")
+    for layer in model.layers:
+        print("-----------Internal layer {}-----------".format(layer.name))
+        print("Weghts")
+        print(layer.weights[0].numpy())
+        print("bias")
+        print(layer.bias.numpy())
+        print(" ")
 
 
 if __name__ == "__main__":
